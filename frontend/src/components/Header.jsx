@@ -8,7 +8,6 @@ import { logout } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
 
 const Header = () => {
-  const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
@@ -30,22 +29,11 @@ const Header = () => {
     <header>
       <Navbar bg="dark" variant="dark" expand="md" collapseOnSelect>
         <LinkContainer to="/">
-          <Navbar.Brand className="px-3">Daniel's Shop</Navbar.Brand>
+          <Navbar.Brand className="px-3">Daniel's User Management</Navbar.Brand>
         </LinkContainer>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto px-2 gap-2">
-            <LinkContainer to="/cart">
-              <Nav.Link className="d-flex align-items-center gap-2">
-                <FaShoppingCart /> Cart
-                {cartItems.length > 0 && (
-                  <Badge pill bg="info">
-                    {cartItems.reduce((acc, curr) => acc + curr.qty, 0)}
-                  </Badge>
-                )}
-              </Nav.Link>
-            </LinkContainer>
-
             {userInfo ? (
               <NavDropdown
                 className="w-full"
