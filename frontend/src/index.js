@@ -14,12 +14,14 @@ import {
 } from "react-router-dom";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import AdminScreen from "./screens/AdminScreen";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/" index={true} element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
+      <Route path="/admin" element={<AdminScreen />} />
     </Route>
   )
 );

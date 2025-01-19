@@ -41,15 +41,12 @@ const Header = () => {
                 id="username"
                 align="end"
               >
-                <LinkContainer to="/profile">
-                  <NavDropdown.Item>Profile</NavDropdown.Item>
-                </LinkContainer>
                 <NavDropdown.Item onClick={logoutHandler}>
                   Logout
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
-              <LinkContainer to="/login">
+              <LinkContainer to="/">
                 <Nav.Link className="d-flex align-items-center gap-2">
                   <FaUser /> Login
                 </Nav.Link>
