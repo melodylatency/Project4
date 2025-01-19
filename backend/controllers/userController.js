@@ -11,6 +11,11 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
+    if (user.isBlocked) {
+      res.status(403);
+      throw new Error("Your account is blocked");
+    }
+
     generateToken(res, user._id);
 
     res.status(200).json({
@@ -104,10 +109,25 @@ const blockUser = asyncHandler(async (req, res) => {
 
   if (user) {
     // Set the user as blocked
-    user.blocked = true;
+    user.isBlocked = true;
     await user.save();
 
     res.status(200).json({ message: "User blocked successfully" });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+const unblockUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    // Set the user as blocked
+    user.isBlocked = false;
+    await user.save();
+
+    res.status(200).json({ message: "User unblocked successfully" });
   } else {
     res.status(404);
     throw new Error("User not found");
@@ -157,10 +177,10 @@ export {
   authUser,
   registerUser,
   logoutUser,
-  getUserProfile,
-  updateUserProfile,
   getUsers,
   getUserById,
+  blockUser,
+  unblockUser,
   deleteUser,
   updateUser,
 };

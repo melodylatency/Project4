@@ -38,6 +38,13 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 userSchema.pre("save", async function (next) {
+  if (this.isNew || this.isModified("email")) {
+    const userExists = await User.findOne({ email: this.email });
+    if (userExists && userExists.isBlocked) {
+      throw new Error("This email is blocked.");
+    }
+  }
+
   if (!this.isModified("password")) {
     // if the password key is not modified
     next();
