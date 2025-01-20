@@ -43,44 +43,50 @@ const AdminScreen = () => {
     }
 
     if (window.confirm(`Are you sure you want to ${action} these users?`)) {
+      let actionCount = 0; // Counter for successful actions
+
       try {
         for (const userId of selectedUsers) {
           const user = users.find((user) => user._id === userId);
           if (user.isAdmin && action === "delete") {
             // Prevent deleting admin users
-            toast.error("Admins can't be deleted");
             continue; // Skip this user
           } else if (user.isAdmin && action === "block") {
-            // Prevent deleting admin users
-            toast.error("Admins can't be blocked");
+            // Prevent blocking admin users
             continue; // Skip this user
           }
 
           switch (action) {
             case "delete":
               await deleteUser(userId);
-              toast.success("User deleted");
+              actionCount++;
               break;
             case "block":
               if (user.isBlocked === true) {
-                toast.success("No action needed");
-                break;
+                continue; // Skip if already blocked
               }
               await blockUser(userId);
-              toast.success("User blocked");
+              actionCount++;
               break;
             case "unblock":
               if (user.isBlocked === false) {
-                toast.success("No action needed");
-                break;
+                continue; // Skip if not blocked
               }
               await unblockUser(userId);
-              toast.success("User unblocked");
+              actionCount++;
               break;
             default:
               toast.error("Unknown action");
           }
         }
+
+        // After processing all selected users, show a toast with the count
+        if (actionCount > 0) {
+          toast.success(`${actionCount} users ${action}ed successfully`);
+        } else {
+          toast.info("No users were affected");
+        }
+
         setSelectedUsers([]); // Reset selection after action
         refetch();
       } catch (err) {
