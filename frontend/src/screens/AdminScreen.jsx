@@ -163,21 +163,21 @@ const AdminScreen = () => {
                 className="scale-125"
               />
               <Button
-                className="d-flex align-items-center gap-2 text-black border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                className="d-flex align-items-center gap-2 text-black border-2 border-black"
                 variant="danger"
                 onClick={() => handleAction("delete")}
               >
                 <FaTrash /> Delete
               </Button>
               <Button
-                className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                className="d-flex align-items-center gap-2 border-2 border-black"
                 variant="warning"
                 onClick={() => handleAction("block")}
               >
                 <FaLock /> Block
               </Button>
               <Button
-                className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                className="d-flex align-items-center gap-2 border-2 border-black"
                 variant="success"
                 onClick={() => handleAction("unblock")}
               >
@@ -186,7 +186,7 @@ const AdminScreen = () => {
             </div>
             <div className="flex">
               <Button
-                className="d-flex align-items-center border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                className="d-flex align-items-center border-2 border-black"
                 onClick={handleSort}
               >
                 <FaSort /> Sort by Last Login
