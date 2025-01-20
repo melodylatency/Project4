@@ -91,7 +91,9 @@ const AdminScreen = () => {
 
   return (
     <>
-      <h1 className="text-6xl text-stroke pt-5 text-pink-600">User List</h1>
+      <h1 className="flex justify-center text-7xl text-stroke py-5 text-pink-600">
+        User List
+      </h1>
       {loadingDelete && <Loader />}
       {loadingBlock && <Loader />}
       {loadingUnblock && <Loader />}
@@ -109,21 +111,21 @@ const AdminScreen = () => {
               className="scale-125"
             />
             <Button
-              className="d-flex align-items-center gap-2 border-2 border-black"
+              className="d-flex align-items-center gap-2 text-black border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
               variant="danger"
               onClick={() => handleAction("delete")}
             >
               <FaTrash /> Delete
             </Button>
             <Button
-              className="d-flex align-items-center gap-2 border-2 border-black"
+              className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
               variant="warning"
               onClick={() => handleAction("block")}
             >
               <FaLock /> Block
             </Button>
             <Button
-              className="d-flex align-items-center gap-2 border-2 border-black"
+              className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
               variant="success"
               onClick={() => handleAction("unblock")}
             >
