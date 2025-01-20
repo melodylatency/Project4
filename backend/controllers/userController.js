@@ -16,6 +16,9 @@ const authUser = asyncHandler(async (req, res) => {
       throw new Error("Your account is blocked");
     }
 
+    user.lastLogin = new Date();
+    await user.save();
+
     generateToken(res, user._id);
 
     res.status(200).json({
@@ -24,6 +27,7 @@ const authUser = asyncHandler(async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       isBlocked: user.isBlocked,
+      lastLogin: user.lastLogin,
     });
   } else {
     res.status(401);
@@ -44,10 +48,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
+  const lastLogin = new Date();
+
   const user = await User.create({
     name,
     email,
     password,
+    lastLogin,
   });
 
   if (user) {
@@ -59,6 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       isBlocked: user.isBlocked,
+      lastLogin: user.lastLogin,
     });
   } else {
     res.status(400);
