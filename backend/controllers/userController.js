@@ -119,6 +119,9 @@ const blockUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Block specific user
+// @route   PUT /api/users/:id/block
+// @access  Private/Admin
 const unblockUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
