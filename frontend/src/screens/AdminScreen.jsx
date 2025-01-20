@@ -1,5 +1,5 @@
 import { Table, Button } from "react-bootstrap";
-import { FaTimes, FaTrash, FaCheck, FaCross } from "react-icons/fa";
+import { FaTimes, FaTrash, FaCheck, FaLock, FaLockOpen } from "react-icons/fa";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import {
@@ -28,6 +28,14 @@ const AdminScreen = () => {
     );
   };
 
+  const handleSelectAll = () => {
+    if (selectedUsers.length === users.length) {
+      setSelectedUsers([]); // Deselect all if all are selected
+    } else {
+      setSelectedUsers(users.map((user) => user._id)); // Select all users
+    }
+  };
+
   const handleAction = async (action) => {
     if (selectedUsers.length === 0) {
       toast.error("Please select users to proceed");
@@ -37,15 +45,40 @@ const AdminScreen = () => {
     if (window.confirm(`Are you sure you want to ${action} these users?`)) {
       try {
         for (const userId of selectedUsers) {
-          if (action === "delete") {
-            await deleteUser(userId);
-            toast.success("User deleted");
-          } else if (action === "block") {
-            await blockUser(userId);
-            toast.success("User blocked");
-          } else if (action === "unblock") {
-            await unblockUser(userId);
-            toast.success("User unblocked");
+          const user = users.find((user) => user._id === userId);
+          if (user.isAdmin && action === "delete") {
+            // Prevent deleting admin users
+            toast.error("Admins can't be deleted");
+            continue; // Skip this user
+          } else if (user.isAdmin && action === "block") {
+            // Prevent deleting admin users
+            toast.error("Admins can't be blocked");
+            continue; // Skip this user
+          }
+
+          switch (action) {
+            case "delete":
+              await deleteUser(userId);
+              toast.success("User deleted");
+              break;
+            case "block":
+              if (user.isBlocked === true) {
+                toast.success("No action needed");
+                break;
+              }
+              await blockUser(userId);
+              toast.success("User blocked");
+              break;
+            case "unblock":
+              if (user.isBlocked === false) {
+                toast.success("No action needed");
+                break;
+              }
+              await unblockUser(userId);
+              toast.success("User unblocked");
+              break;
+            default:
+              toast.error("Unknown action");
           }
         }
         setSelectedUsers([]); // Reset selection after action
@@ -58,7 +91,7 @@ const AdminScreen = () => {
 
   return (
     <>
-      <h1>User List</h1>
+      <h1 className="text-6xl text-stroke pt-5 text-pink-600">User List</h1>
       {loadingDelete && <Loader />}
       {loadingBlock && <Loader />}
       {loadingUnblock && <Loader />}
@@ -68,27 +101,33 @@ const AdminScreen = () => {
         <Message variant="danger">{error.message || "Not admin"}</Message>
       ) : (
         <>
-          <div className="mb-3">
+          <div className="flex flex-row gap-3 py-3 pl-1">
+            <input
+              type="checkbox"
+              checked={selectedUsers.length === users.length}
+              onChange={handleSelectAll}
+              className="scale-125"
+            />
             <Button
+              className="d-flex align-items-center gap-2 border-2 border-black"
               variant="danger"
-              className="btn-sm"
               onClick={() => handleAction("delete")}
             >
-              <FaTrash /> Delete Selected Users
+              <FaTrash /> Delete
             </Button>
             <Button
-              variant="danger"
-              className="btn-sm"
+              className="d-flex align-items-center gap-2 border-2 border-black"
+              variant="warning"
               onClick={() => handleAction("block")}
             >
-              <FaCross /> Block Selected Users
+              <FaLock /> Block
             </Button>
             <Button
+              className="d-flex align-items-center gap-2 border-2 border-black"
               variant="success"
-              className="btn-sm"
               onClick={() => handleAction("unblock")}
             >
-              <FaCross /> Unblock Selected Users
+              <FaLockOpen /> Unblock
             </Button>
           </div>
           <Table striped hover responsive className="table-sm">
@@ -113,7 +152,12 @@ const AdminScreen = () => {
                   </td>
                   <td>{user.name}</td>
                   <td>
-                    <a href={`mailto:${user.email}`}>{user.email}</a>
+                    <a
+                      href={`mailto:${user.email}`}
+                      className="underline text-blue-500"
+                    >
+                      {user.email}
+                    </a>
                   </td>
                   <td>
                     {user.isAdmin ? (
