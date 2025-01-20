@@ -10,6 +10,7 @@ import {
 } from "../redux/slices/usersApiSlice";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import moment from "moment";
 
 const AdminScreen = () => {
   const { data: users, refetch, isLoading, error } = useGetUsersQuery();
@@ -170,6 +171,7 @@ const AdminScreen = () => {
                 <th>EMAIL</th>
                 <th>ADMIN</th>
                 <th>BLOCKED</th>
+                <th>LAST LOGIN</th>
               </tr>
             </thead>
             <tbody>
@@ -204,6 +206,9 @@ const AdminScreen = () => {
                     ) : (
                       <FaTimes style={{ color: "red" }} />
                     )}
+                  </td>
+                  <td className="font-thin">
+                    {moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a")}
                   </td>
                 </tr>
               ))}
