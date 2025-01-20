@@ -1,5 +1,12 @@
 import { Table, Button } from "react-bootstrap";
-import { FaTimes, FaTrash, FaCheck, FaLock, FaLockOpen } from "react-icons/fa";
+import {
+  FaTimes,
+  FaTrash,
+  FaCheck,
+  FaLock,
+  FaLockOpen,
+  FaSort,
+} from "react-icons/fa"; // Added FaSort for sort icon
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import {
@@ -13,13 +20,14 @@ import { useState } from "react";
 import moment from "moment";
 
 const AdminScreen = () => {
-  const { data: users, refetch, isLoading, error } = useGetUsersQuery();
+  const { data: users = [], refetch, isLoading, error } = useGetUsersQuery(); // Default users to an empty array if undefined
 
   const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
   const [blockUser, { isLoading: loadingBlock }] = useBlockUserMutation();
   const [unblockUser, { isLoading: loadingUnblock }] = useUnblockUserMutation();
 
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [sortOrder, setSortOrder] = useState("desc"); // Track the sorting order
 
   const handleSelectUser = (userId) => {
     setSelectedUsers((prevSelected) =>
@@ -120,6 +128,18 @@ const AdminScreen = () => {
     }
   };
 
+  // Sort users by last login
+  const sortedUsers = [...users].sort((a, b) => {
+    const dateA = moment(a.lastLogin);
+    const dateB = moment(b.lastLogin);
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+  });
+
+  // Toggle sort order
+  const handleSort = () => {
+    setSortOrder((prevOrder) => (prevOrder === "desc" ? "asc" : "desc"));
+  };
+
   return (
     <>
       <h1 className="flex justify-center text-7xl text-stroke py-5 text-pink-600">
@@ -134,34 +154,44 @@ const AdminScreen = () => {
         <Message variant="danger">{error.message || "Not admin"}</Message>
       ) : (
         <>
-          <div className="flex flex-row gap-3 py-3 pl-1">
-            <input
-              type="checkbox"
-              checked={selectedUsers.length === users.length}
-              onChange={handleSelectAll}
-              className="scale-125"
-            />
-            <Button
-              className="d-flex align-items-center gap-2 text-black border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
-              variant="danger"
-              onClick={() => handleAction("delete")}
-            >
-              <FaTrash /> Delete
-            </Button>
-            <Button
-              className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
-              variant="warning"
-              onClick={() => handleAction("block")}
-            >
-              <FaLock /> Block
-            </Button>
-            <Button
-              className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
-              variant="success"
-              onClick={() => handleAction("unblock")}
-            >
-              <FaLockOpen /> Unblock
-            </Button>
+          <div className="flex flex-row py-3 pl-1 justify-between">
+            <div className="flex flex-row gap-3">
+              <input
+                type="checkbox"
+                checked={selectedUsers.length === users.length}
+                onChange={handleSelectAll}
+                className="scale-125"
+              />
+              <Button
+                className="d-flex align-items-center gap-2 text-black border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                variant="danger"
+                onClick={() => handleAction("delete")}
+              >
+                <FaTrash /> Delete
+              </Button>
+              <Button
+                className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                variant="warning"
+                onClick={() => handleAction("block")}
+              >
+                <FaLock /> Block
+              </Button>
+              <Button
+                className="d-flex align-items-center gap-2 border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                variant="success"
+                onClick={() => handleAction("unblock")}
+              >
+                <FaLockOpen /> Unblock
+              </Button>
+            </div>
+            <div className="flex">
+              <Button
+                className="d-flex align-items-center border-2 border-black hover:scale-105 transition-transform duration-100 ease-in-out"
+                onClick={handleSort}
+              >
+                <FaSort /> Sort by Last Login
+              </Button>
+            </div>
           </div>
           <Table striped hover responsive className="table-sm">
             <thead>
@@ -175,7 +205,7 @@ const AdminScreen = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {sortedUsers.map((user) => (
                 <tr key={user._id}>
                   <td>
                     <input
