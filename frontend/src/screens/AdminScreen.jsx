@@ -237,7 +237,12 @@ const AdminScreen = () => {
                       <FaTimes style={{ color: "red" }} />
                     )}
                   </td>
-                  <td className="font-thin">
+                  <td
+                    className="font-thin overflow-hidden text-ellipsis whitespace-nowrap"
+                    style={{
+                      maxWidth: "200px", // Adjust this value as needed
+                    }}
+                  >
                     {moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a")}
                   </td>
                 </tr>

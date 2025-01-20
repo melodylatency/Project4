@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Badge, Navbar, Nav, NavDropdown } from "react-bootstrap";
-import { FaShoppingCart, FaUser } from "react-icons/fa"; // Icons
+import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { FaUser } from "react-icons/fa"; // Icons
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useLogoutMutation } from "../redux/slices/usersApiSlice";
