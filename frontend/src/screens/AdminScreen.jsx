@@ -1,4 +1,4 @@
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, Row, Col } from "react-bootstrap";
 import {
   FaTimes,
   FaTrash,
@@ -154,44 +154,53 @@ const AdminScreen = () => {
         <Message variant="danger">{error.message || "Not admin"}</Message>
       ) : (
         <>
-          <div className="flex flex-row py-3 pl-1 justify-between">
-            <div className="flex flex-row gap-3">
-              <input
-                type="checkbox"
-                checked={selectedUsers.length === users.length}
-                onChange={handleSelectAll}
-                className="scale-125"
-              />
-              <Button
-                className="d-flex align-items-center gap-2 text-black border-2 border-black"
-                variant="danger"
-                onClick={() => handleAction("delete")}
+          <div className="py-3 pl-1">
+            <Row className="align-items-center justify-content-between">
+              {/* Left section */}
+              <Col
+                xs={12}
+                sm="auto"
+                className="d-flex flex-wrap gap-3 mb-2 mb-sm-0"
               >
-                <FaTrash /> Delete
-              </Button>
-              <Button
-                className="d-flex align-items-center gap-2 border-2 border-black"
-                variant="warning"
-                onClick={() => handleAction("block")}
-              >
-                <FaLock /> Block
-              </Button>
-              <Button
-                className="d-flex align-items-center gap-2 border-2 border-black"
-                variant="success"
-                onClick={() => handleAction("unblock")}
-              >
-                <FaLockOpen /> Unblock
-              </Button>
-            </div>
-            <div className="flex">
-              <Button
-                className="d-flex align-items-center border-2 border-black"
-                onClick={handleSort}
-              >
-                <FaSort /> Sort by Last Login
-              </Button>
-            </div>
+                <input
+                  type="checkbox"
+                  checked={selectedUsers.length === users.length}
+                  onChange={handleSelectAll}
+                  className="scale-125"
+                />
+                <Button
+                  className="d-flex align-items-center gap-2 text-black border-2 border-black"
+                  variant="danger"
+                  onClick={() => handleAction("delete")}
+                >
+                  <FaTrash /> Delete
+                </Button>
+                <Button
+                  className="d-flex align-items-center gap-2 border-2 border-black"
+                  variant="warning"
+                  onClick={() => handleAction("block")}
+                >
+                  <FaLock /> Block
+                </Button>
+                <Button
+                  className="d-flex align-items-center gap-2 border-2 border-black"
+                  variant="success"
+                  onClick={() => handleAction("unblock")}
+                >
+                  <FaLockOpen /> Unblock
+                </Button>
+              </Col>
+
+              {/* Right section */}
+              <Col xs={12} sm="auto" className="text-sm-end">
+                <Button
+                  className="d-flex align-items-center border-2 border-black"
+                  onClick={handleSort}
+                >
+                  <FaSort /> Sort by Last Login
+                </Button>
+              </Col>
+            </Row>
           </div>
           <Table striped hover responsive className="table-sm">
             <thead>
