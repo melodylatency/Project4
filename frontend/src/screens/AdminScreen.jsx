@@ -20,10 +20,12 @@ import { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import { useLogoutMutation } from "../redux/slices/usersApiSlice";
 import { logout } from "../redux/slices/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const AdminScreen = () => {
+  const { userInfo } = useSelector((state) => state.auth);
+
   const { data: users = [], refetch, isLoading, error } = useGetUsersQuery(); // Default users to an empty array if undefined
 
   const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
@@ -90,7 +92,13 @@ const AdminScreen = () => {
       let actionCount = 0;
 
       try {
-        for (const userId of selectedUsers) {
+        // Rearrange selectedUsers to process userInfo._id last
+        const reorderedUsers = [
+          ...selectedUsers.filter((id) => id !== userInfo._id), // Other users
+          ...selectedUsers.filter((id) => id === userInfo._id), // Current user
+        ];
+
+        for (const userId of reorderedUsers) {
           const user = users.find((user) => user._id === userId);
 
           switch (action) {
