@@ -166,6 +166,11 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new Error("You have been blocked");
   }
 
+  if (req.user._id === req.params.id) {
+    res.status(204);
+    throw new Error("You have been deleted");
+  }
+
   if (user) {
     await User.deleteOne({ _id: user._id });
     res.status(200).json({ message: "User deleted successfully" });

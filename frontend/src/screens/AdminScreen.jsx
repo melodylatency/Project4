@@ -16,7 +16,7 @@ import {
   useUnblockUserMutation,
 } from "../redux/slices/usersApiSlice";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import { useLogoutMutation } from "../redux/slices/usersApiSlice";
 import { logout } from "../redux/slices/authSlice";
@@ -38,7 +38,7 @@ const AdminScreen = () => {
 
   const [logoutApiCall] = useLogoutMutation();
 
-  const logoutHandler = async () => {
+  const logoutHandler = useCallback(async () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
@@ -46,7 +46,23 @@ const AdminScreen = () => {
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
-  };
+  }, [logoutApiCall, dispatch, navigate]);
+
+  // Check for user deletion or authorization error
+  // Check for user deletion or 401 error
+  useEffect(() => {
+    if (error?.status === 401) {
+      if (
+        error?.data?.message === "User does not exist. Please log in again."
+      ) {
+        toast.error("Your account no longer exists. Redirecting to login...");
+        logoutHandler();
+      } else {
+        toast.error("Unauthorized. Please log in again.");
+        logoutHandler();
+      }
+    }
+  }, [error, logoutHandler]);
 
   const handleSelectUser = (userId) => {
     setSelectedUsers((prevSelected) =>
@@ -110,9 +126,6 @@ const AdminScreen = () => {
       } catch (err) {
         if (err?.status === 403) {
           toast.error("Your account is blocked. Redirecting to login.");
-          logoutHandler();
-        } else if (err?.status === 401) {
-          toast.error("You are no longer authorized. Redirecting to login.");
           logoutHandler();
         } else {
           toast.error(err?.data?.message || err.error);
