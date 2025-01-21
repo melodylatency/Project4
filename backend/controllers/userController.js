@@ -115,6 +115,11 @@ const getUserById = asyncHandler(async (req, res) => {
 const blockUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
+  if (req.user.isBlocked === true) {
+    res.status(403);
+    throw new Error("You have been blocked");
+  }
+
   if (user) {
     // Set the user as blocked
     user.isBlocked = true;
@@ -133,6 +138,11 @@ const blockUser = asyncHandler(async (req, res) => {
 const unblockUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
+  if (req.user.isBlocked === true) {
+    res.status(403);
+    throw new Error("You have been blocked");
+  }
+
   if (user) {
     // Set the user as blocked
     user.isBlocked = false;
@@ -150,6 +160,12 @@ const unblockUser = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
+
+  if (req.user.isBlocked === true) {
+    res.status(403);
+    throw new Error("You have been blocked");
+  }
+
   if (user) {
     await User.deleteOne({ _id: user._id });
     res.status(200).json({ message: "User deleted successfully" });

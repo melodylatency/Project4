@@ -18,6 +18,10 @@ import {
 import { toast } from "react-toastify";
 import { useState } from "react";
 import moment from "moment";
+import { useLogoutMutation } from "../redux/slices/usersApiSlice";
+import { logout } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const AdminScreen = () => {
   const { data: users = [], refetch, isLoading, error } = useGetUsersQuery(); // Default users to an empty array if undefined
@@ -28,6 +32,21 @@ const AdminScreen = () => {
 
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc"); // Track the sorting order
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [logoutApiCall] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate("/");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   const handleSelectUser = (userId) => {
     setSelectedUsers((prevSelected) =>
@@ -52,7 +71,7 @@ const AdminScreen = () => {
     }
 
     if (window.confirm(`Are you sure you want to ${action} these users?`)) {
-      let actionCount = 0; // Counter for successful actions
+      let actionCount = 0;
 
       try {
         for (const userId of selectedUsers) {
@@ -60,21 +79,17 @@ const AdminScreen = () => {
 
           switch (action) {
             case "delete":
-              await deleteUser(userId);
+              await deleteUser(userId).unwrap(); // `unwrap` to throw errors
               actionCount++;
               break;
             case "block":
-              if (user.isBlocked === true) {
-                continue; // Skip if already blocked
-              }
-              await blockUser(userId);
+              if (user.isBlocked === true) continue;
+              await blockUser(userId).unwrap();
               actionCount++;
               break;
             case "unblock":
-              if (user.isBlocked === false) {
-                continue; // Skip if not blocked
-              }
-              await unblockUser(userId);
+              if (user.isBlocked === false) continue;
+              await unblockUser(userId).unwrap();
               actionCount++;
               break;
             default:
@@ -82,7 +97,6 @@ const AdminScreen = () => {
           }
         }
 
-        // Show success toast if there were any successful actions
         if (actionCount > 0) {
           toast.success(
             `${actionCount} user${
@@ -94,7 +108,15 @@ const AdminScreen = () => {
         setSelectedUsers([]); // Reset selection after action
         refetch();
       } catch (err) {
-        toast.error(err?.data?.message || err.error);
+        if (err?.status === 403) {
+          toast.error("Your account is blocked. Redirecting to login.");
+          logoutHandler();
+        } else if (err?.status === 401) {
+          toast.error("You are no longer authorized. Redirecting to login.");
+          logoutHandler();
+        } else {
+          toast.error(err?.data?.message || err.error);
+        }
       }
     }
   };
