@@ -53,27 +53,10 @@ const AdminScreen = () => {
 
     if (window.confirm(`Are you sure you want to ${action} these users?`)) {
       let actionCount = 0; // Counter for successful actions
-      let errorCount = 0; // Counter for errors
-      let errorMessages = []; // Array to hold error messages
 
       try {
         for (const userId of selectedUsers) {
           const user = users.find((user) => user._id === userId);
-          if (user.isAdmin && action === "delete") {
-            // Prevent deleting admin users
-            errorCount++;
-            errorMessages.push(
-              `${user.name} is an admin and can't be deleted.`
-            );
-            continue; // Skip this user
-          } else if (user.isAdmin && action === "block") {
-            // Prevent blocking admin users
-            errorCount++;
-            errorMessages.push(
-              `${user.name} is an admin and can't be blocked.`
-            );
-            continue; // Skip this user
-          }
 
           switch (action) {
             case "delete":
@@ -99,16 +82,6 @@ const AdminScreen = () => {
           }
         }
 
-        // Show error toast if there were any errors
-        if (errorCount > 0) {
-          const errorMessage = `${errorCount} user${
-            errorCount > 1 ? "s" : ""
-          } could not be ${action}ed: user${errorCount > 1 ? "s" : ""} ${
-            errorCount > 1 ? "are" : "is"
-          } admin${errorCount > 1 ? "s" : ""}`;
-          toast.error(errorMessage);
-        }
-
         // Show success toast if there were any successful actions
         if (actionCount > 0) {
           toast.success(
@@ -116,8 +89,6 @@ const AdminScreen = () => {
               actionCount > 1 ? "s" : ""
             } ${action}ed successfully.`
           );
-        } else if (errorCount === 0) {
-          toast.info("No users were affected.");
         }
 
         setSelectedUsers([]); // Reset selection after action
@@ -208,7 +179,6 @@ const AdminScreen = () => {
                 <th>Select</th>
                 <th>NAME</th>
                 <th>EMAIL</th>
-                <th>ADMIN</th>
                 <th>BLOCKED</th>
                 <th>LAST LOGIN</th>
               </tr>
@@ -231,13 +201,6 @@ const AdminScreen = () => {
                     >
                       {user.email}
                     </a>
-                  </td>
-                  <td>
-                    {user.isAdmin ? (
-                      <FaCheck style={{ color: "green" }} />
-                    ) : (
-                      <FaTimes style={{ color: "red" }} />
-                    )}
                   </td>
                   <td>
                     {user.isBlocked ? (

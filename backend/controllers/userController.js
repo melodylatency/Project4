@@ -116,10 +116,6 @@ const blockUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
   if (user) {
-    if (user.isAdmin) {
-      res.status(400);
-      throw new Error("Admins can't be blocked");
-    }
     // Set the user as blocked
     user.isBlocked = true;
     await user.save();
@@ -155,10 +151,6 @@ const unblockUser = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
-    if (user.isAdmin) {
-      res.status(400);
-      throw new Error("Admins can't be deleted");
-    }
     await User.deleteOne({ _id: user._id });
     res.status(200).json({ message: "User deleted successfully" });
   } else {
