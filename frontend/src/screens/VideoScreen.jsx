@@ -10,7 +10,7 @@ const VideoScreen = () => {
         controlsList="nofullscreen"
         disablePictureInPicture
       >
-        <source src="videos/project4.mp4" type="video/mp4" />
+        <source src="videos/project3.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
     </div>
